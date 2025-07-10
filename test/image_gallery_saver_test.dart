@@ -1,5 +1,3 @@
-import 'dart:async';
-import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -11,7 +9,8 @@ void main() {
   final List<MethodCall> log = <MethodCall>[];
   bool? response;
 
-  channel.setMockMethodCallHandler((MethodCall methodCall) async {
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
     log.add(methodCall);
     return response;
   });
@@ -20,11 +19,10 @@ void main() {
     log.clear();
   });
 
-
   test('saveImageToGallery test', () async {
     response = true;
-    Uint8List imageBytes = Uint8List(16);
-    final bool? result = await (ImageGallerySaver.saveImage(imageBytes) as FutureOr<dynamic>);
+    final Uint8List imageBytes = Uint8List(16);
+    final bool? result = await ImageGallerySaver.saveImage(imageBytes);
     expect(
       log,
       <Matcher>[
@@ -38,5 +36,4 @@ void main() {
     );
     expect(result, response);
   });
-
 }
